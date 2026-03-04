@@ -5,11 +5,10 @@ const Task = require("../models/task.model");
 // CREATE TASK
 // ======================================
 exports.createTask = async (req, res, next) => {
-    res.json({ message: "THIS IS THE NEW VERSION" });
     try {
         const task = await Task.create({
             ...req.body,
-            user: req.user._id   // 🔐 secure user assignment
+            user: req.user._id
         });
 
         res.status(201).json({
@@ -93,33 +92,36 @@ exports.getTasks = async (req, res, next) => {
 // ======================================
 // GET SINGLE TASK
 // ======================================
+// ======================================
+// GET SINGLE TASK
+// ======================================
 exports.getTask = async (req, res, next) => {
-    try {
-        const task = await Task.findOne({
-            _id: req.params.id,
-            user: req.user._id,   // 🔐 secure
-            isDeleted: false
-        }).select("title description status priority");
+  try {
 
-        if (!task) {
-            return res.status(404).json({
-                success: false,
-                message: "Task not found"
-            });
-        }
+    const task = await Task.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+      isDeleted: false
+    }).select("title description status priority");
 
-        res.status(200).json({
-            success: true,
-            message: "Task fetched successfully",
-            data: task
-        });
-
-    } catch (error) {
-        error.statusCode = 400;
-        next(error);
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: "Task not found"
+      });
     }
-};
 
+    return res.status(200).json({
+      success: true,
+      message: "Task fetched successfully",
+      data: task
+    });
+
+  } catch (error) {
+    error.statusCode = 400;
+    next(error);
+  }
+};
 
 // ======================================
 // UPDATE TASK
